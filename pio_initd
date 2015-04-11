@@ -6,8 +6,8 @@
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Put a short description of the service here
-# Description:       Put a long description of the service here
+# Short-Description: PIO-Serverdaemon
+# Description:       PIO-Serverdaemon
 ### END INIT INFO
 #
 # sudo update-rc.d pio defaults
