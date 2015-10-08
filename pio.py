@@ -3,6 +3,7 @@ import time
 import RPIO as GPIO
 from Adafruit_PWM_Servo_Driver import PWM
 import SocketServer
+import json
 
 PROMPT="PIO02>"
 HOST = ''
@@ -66,7 +67,7 @@ PV = [
 
 # PCA9685-PWM-Board
 pwm = PWM(0x40)
-pwm.setPWMFreq(200)
+pwm.setPWMFreq(400)
 PWM_CHANNELS=16
 channels=[]
 for i in range(PWM_CHANNELS):
@@ -110,6 +111,32 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 		ret+= "relay x [on|off] : Set Relay x (0 - "+str(len(RELAYS)-1)+")\n"
 		self.request.send(ret+"\n")
 
+	def json_data(self):
+		ret = { 'version' : 'pio sw-rev 0.2 JensLeuschner 2015' }
+		j=[]
+		for i in range(0,len(RELAYS)):
+			j.append(1);
+			if GPIO.input(RELAYS[i]):
+				j[i]=0
+			else:
+				j[i]=1
+		ret['relays'] = j
+		ret['pwm'] = channels
+		self.request.send(json.dumps(ret)+"\n")
+
+	def json_set(self,obj):
+		if 'relays' in obj:
+			for i in range(0, len(obj['relays'])):
+				if obj['relays'][i]['value']:
+					GPIO.output(RELAYS[int(obj['relays'][i]['id'])], GPIO.LOW)
+				else:
+					GPIO.output(RELAYS[int(obj['relays'][i]['id'])], GPIO.HIGH)
+		if 'pwm' in obj:
+			for i in range(0, len(obj['pwm'])):
+				pwm.setPWM(int(obj['pwm'][i]['id']),0,PV[int(obj['pwm'][i]['value'])])
+				channels[int(obj['pwm'][i]['id'])] = int(obj['pwm'][i]['value'])
+		self.json_data()
+	
 	def relay_status(self,id):
 		if GPIO.input(RELAYS[id]):
 			ret="Relay " + str(id) + " Status: OFF"
@@ -141,6 +168,12 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 				break
 			if words[0] == 'version':
 				self.version()
+				continue
+			if words[0] == 'json':
+				if len(words) > 1:
+					self.json_set(json.loads(' '.join(words[1:])))
+				else:
+					self.json_data()
 				continue
 			if words[0] == 'relay':
 				if len(words) > 1:
@@ -197,6 +230,7 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 			ret+= "version Show pio Version\n"
 			ret+= "relay   Relay commands\n"
 			ret+= "pwm     PWM-Channel commands\n"
+			ret+= "json    get/set complete IO-Status in JSON-Format\n"
 			ret+= "exit    Close Connection\n"
 			ret+= "help    This Text\n"
 			self.request.send(ret+"\n")
