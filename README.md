@@ -14,7 +14,7 @@ A Python IO-Server for Raspberry Pi
 - apt-get install python-smbus
 
 ### Install
-- clone This repository to /usr/local
+- clone this repository to /usr/local
 - cd /pio
 - edit pio.py (PROMPT, pinning, etc... )
 - start ./pio.py
