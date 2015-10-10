@@ -1,6 +1,11 @@
 # pio
 A Python IO-Server for Raspberry Pi
 
+### Prerequirements
+- apt-get install python-setuptools
+- easy_install -U RPIO
+- apt-get install python-smbus
+
 ### Install
 - clone This repository to /usr/local
 - cd /pio
