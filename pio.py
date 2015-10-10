@@ -5,19 +5,18 @@ from Adafruit_PWM_Servo_Driver import PWM
 import SocketServer
 import json
 
-PROMPT="PIO02>"
+PIO_VERSION='0.3'
+PROMPT="PIO03>"
 HOST = ''
 PORT = 2000
 
-# Pinning - Out
+# Pinning - Output
 LED_RED = 8
 LED_GRN = 7
-#RELAY1 = 18
-#RELAY2 = 23
-#RELAY3 = 24
-#RELAY4 = 25
-RELAYS = [18,23,24,25]
-# Pinning - Out
+#RELAYS = [18,23,24,25]
+RELAYS = []
+
+# Pinning - Input
 SWITCH_PWR = 9
 SWITCH_RST = 10
 
@@ -29,10 +28,6 @@ GPIO.setup(LED_GRN,GPIO.OUT, initial=GPIO.HIGH)
 for i in RELAYS:
 	GPIO.setup(i,GPIO.OUT, initial=GPIO.HIGH)
 	
-#GPIO.setup(RELAY1,GPIO.OUT, initial=GPIO.HIGH)
-#GPIO.setup(RELAY2,GPIO.OUT, initial=GPIO.HIGH)
-#GPIO.setup(RELAY3,GPIO.OUT, initial=GPIO.HIGH)
-#GPIO.setup(RELAY4,GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(SWITCH_PWR,GPIO.IN)
 GPIO.setup(SWITCH_RST,GPIO.IN)
 
@@ -102,8 +97,7 @@ GPIO.wait_for_interrupts(threaded=True)
 
 class ConnectionHandler(SocketServer.BaseRequestHandler):
 	def version(self):
-		ret = "pio sw-rev 0.1 JensLeuschner 2015\n"
-		self.request.send(ret+"\n")
+		self.request.send(PIO_VERSION+"\n")
 	
 	def relay_usage(self):
 		ret = "relay            : Status of all Relays\n"
@@ -112,7 +106,7 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 		self.request.send(ret+"\n")
 
 	def json_data(self):
-		ret = { 'version' : 'pio sw-rev 0.2 JensLeuschner 2015' }
+		ret = { 'version' : PIO_VERSION }
 		j=[]
 		for i in range(0,len(RELAYS)):
 			j.append(1);
@@ -120,7 +114,8 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 				j[i]=0
 			else:
 				j[i]=1
-		ret['relays'] = j
+		if len(RELAYS):
+			ret['relays'] = j
 		ret['pwm'] = channels
 		self.request.send(json.dumps(ret)+"\n")
 
