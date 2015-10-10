@@ -1,6 +1,13 @@
 # pio
 A Python IO-Server for Raspberry Pi
 
+##### IOs:
+###### Digital
+- Relays or LEDs per direct GPIO
+
+###### PWM
+
+
 ### Prerequirements
 - apt-get install python-setuptools
 - easy_install -U RPIO
