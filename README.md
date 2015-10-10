@@ -6,7 +6,7 @@ A Python IO-Server for Raspberry Pi
 - Relays or LEDs per direct GPIO
 
 ###### PWM
-
+- addressing 12-bit PWM-Driver via I2c with DMX-conform 8-bit adaption ( http://www.adafruit.com/product/815 )
 
 ### Prerequirements
 - apt-get install python-setuptools
