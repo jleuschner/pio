@@ -14,5 +14,5 @@ A Python IO-Server for Raspberry Pi
 - connect to ip:port - Enjoy!
 
 #### Install as Service:
-- cp pio_initd /etc/initd
+- cp pio_initd /etc/init.d/
 - sudo update-rc.d pio defaults
