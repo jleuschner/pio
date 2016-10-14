@@ -5,16 +5,16 @@ from Adafruit_PWM_Servo_Driver import PWM
 import SocketServer
 import json
 
-PIO_VERSION='0.3'
-PROMPT="PIO03>"
+PIO_VERSION='0.4'
+PROMPT="PIO02>"
 HOST = ''
 PORT = 2000
 
 # Pinning - Output
 LED_RED = 8
 LED_GRN = 7
-#RELAYS = [18,23,24,25]
-RELAYS = []
+RELAYS = [18,23,24,25]
+#RELAYS = []
 
 # Pinning - Input
 SWITCH_PWR = 9
@@ -152,6 +152,14 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 		
 	def handle(self):
 		print self.client_address
+
+		# Connect - Alle Werte ausgeben:
+		for i in range(0,len(RELAYS)):
+			self.relay_status(i)
+		for i in range(0,PWM_CHANNELS):
+			self.pwm_status(i)
+
+
 		talk=True
 		reply=''
 		while (talk):
